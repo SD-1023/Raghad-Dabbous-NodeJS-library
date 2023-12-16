@@ -1,5 +1,8 @@
-const express = require('express');
-const booksRoutes = require('./routes/booksRoutes')
+import express from "express";
+import booksRoutes from './routes/booksRoutes'
+
+// const express = require("express");
+// const booksRoutes = require("./routes/booksRoutes")
 
 const app = express();
 

@@ -1,1 +1,17 @@
-[{"id":1,"name":"book1"},{"id":2,"name":"book2"},{"id":3,"name":"book3"}]
+[
+    {
+        "isbn":9781265455644,
+        "name":"The Art of Public Speaking",
+        "author":"Stephen Lucas"
+    },
+    {
+        "isbn":9781119110477,
+        "name":"Organic Chemistry",
+        "author":"David R. Klein"
+    },
+    {
+        "isbn":9780132350884,
+        "name":"Clean Code",
+        "author":" Martin Robert C."
+    }
+]

@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "sourceMap": false,
+      "outDir": "build",
+      "allowSyntheticDefaultImports": true,
+      "lib": ["ES2015" , "DOM"]
+    }
+  }

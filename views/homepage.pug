@@ -2,11 +2,11 @@ html
   head
     title Books
   body
-    if books.length == 0 
+    if allBooks.length == 0 
         h1 The library is empty
     else 
         h1 Books
         ul
-        each book in books   
+        each book in allBooks   
             li(style ='list-style-type: none;')
                 p= book.name      
