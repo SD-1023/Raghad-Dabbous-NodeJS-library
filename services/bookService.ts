@@ -6,14 +6,13 @@ import {readFile} from 'fs/promises';
 export interface Ibook{
     isbn : number,
     name : string,
-    author : string,
+    author : string
 }
 
 async function getBooks() : Promise<Ibook[]>{
-    let books : Ibook[] =[];
     try{
         const data = await readFile("./books.json", "utf8");
-        books = JSON.parse(data);
+        const books: Ibook[] = JSON.parse(data);
         console.log(books)
         return books;
     }catch(error){ //send error message
@@ -24,12 +23,12 @@ async function getBooks() : Promise<Ibook[]>{
 
 async function getBookByISBN(isbn: number) : Promise<Ibook>{
     try{
-        let books  =await getBooks();
+        let books : Ibook[] = await getBooks();
         const book: Ibook = books.find(b => b.isbn == isbn);
         // console.log(book)
         return book;
     }catch(error){ //send error message
-        console.log(error)
+        return error.message;
     }
     
 }
@@ -46,11 +45,11 @@ async function newBook(book: Ibook): Promise<Ibook[]> {
         await fs.writeFile("./books.json", JSON.stringify(books));
         return books;
     }catch (error) {
-        console.log(error)
+        return error.message;
     }
 }
 
-async function search(name: string): Promise<Ibook[]>{
+async function searchByName(name: string): Promise<Ibook[]>{
     try{
         let books:Ibook[] = await getBooks();
         const result: Ibook[] = books.filter((book)=>{
@@ -58,9 +57,9 @@ async function search(name: string): Promise<Ibook[]>{
         });
         return result;
     }catch (error) {
-        console.log(error)
+        return error.message;
     }
 }
 
 // module.exports = {getBooks , newBook , search , getBookByISBN}
-export default {getBooks , newBook , search , getBookByISBN };
+export default {getBooks , newBook , searchByName , getBookByISBN };

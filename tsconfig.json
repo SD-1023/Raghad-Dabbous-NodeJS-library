@@ -6,6 +6,6 @@
       "sourceMap": false,
       "outDir": "build",
       "allowSyntheticDefaultImports": true,
-      "lib": ["ES2015" , "DOM"]
+      "esModuleInterop": true
     }
   }
