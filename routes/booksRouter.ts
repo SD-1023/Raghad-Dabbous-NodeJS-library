@@ -1,12 +1,13 @@
 // const express = require("express");
 // const bookServices = require("../services/bookServices");
 import express from "express"
-import bookServices from "../services/bookService.js";
+// import bookServices from "../services/bookService.js";
 import booksModel from "../models/booksModel.js";
 import publisherModel from "../models/publisherModel.js";
 import commentsModel from "../models/commentsModel.js";
 import sequelize from "../database/db.js";
 import Sequelize  from "sequelize";
+import usersModel from "../models/usersModel.js";
 
 const router = express.Router();
 
@@ -16,27 +17,13 @@ booksModel.belongsTo(publisherModel , {foreignKey : "publisherID"});
 booksModel.hasMany(commentsModel ,  {foreignKey : "book_id"});
 commentsModel.belongsTo(booksModel ,  {foreignKey : "book_id" });
 
-/*
- required fields: title, isbn, publisher_id
-    optional fields: year, author, pages
+usersModel.hasMany(commentsModel ,  {foreignKey : "userID"} );
+commentsModel.belongsTo(usersModel ,  {foreignKey : "userID"});
 
-*/
-interface IBook{
-    isbn : number,
-    title : string,
-    publisher_id : number,
-    author? : string,
-    year? : number,
-    pages? : number
-}
-
+//get all books
 router.get("/", async (req, res)=>{
     try{
         const result = await booksModel.findAll();
-        if(result.length == 0){
-            res.json("The library is empty");
-            return;
-        }
         res.json(result);
     }catch(error){
         res.status(500).send("server error");
@@ -55,6 +42,7 @@ router.get("/", async (req, res)=>{
     // } 
 })
 
+//search a book by name
 router.get("/search" ,async (req , res) => {
     if(!req.query.name){
         res.status(400).json("name is required");
@@ -76,7 +64,7 @@ router.get("/search" ,async (req , res) => {
         // res.json(result);
     }catch(error){
         console.log(error.message);
-        res.status(500).send("server error");
+        res.status(500).json({message : "server error"});
     }
 })
 //SELECT books.*, AVG(comments.stars)
@@ -111,12 +99,21 @@ router.get('/top-rated' , async(req, res)=>{
     
 })
 
+//get book by id
 router.get('/:id' , async(req , res)=>{
     try{
         const id = parseInt(req.params.id);
         const book = await booksModel.findByPk(id,
-            {
-                include : [publisherModel , commentsModel ]
+            {   
+                include : [
+                    publisherModel ,    
+                    {
+                        model : commentsModel,
+                        include : [{
+                            model: usersModel,
+                            attributes : ["email"], 
+                        }]
+                    }]
             }
         );
         if(!book){
@@ -126,7 +123,8 @@ router.get('/:id' , async(req , res)=>{
         res.json(book);
 
     }catch(error){
-        res.status(500).send("server error");
+        console.log(error);
+        res.status(500).json({message : "server error"});
     }
     
 })
@@ -173,23 +171,31 @@ router.post("/" , async (req, res)=>{
         // res.status(201).json(allBooks);
     }catch(error){
         console.log(error)
-        res.status(500).send("server error");
+        res.status(500).json({message : "server error"});
     } 
 })
 
 router.put("/:id" , async(req,res)=>{
     try{
         const id: number =parseInt( req.params.id);
+        const book = await booksModel.findByPk(id);
+        if(!book){
+            res.status(404).json({message: "No book has been found."});
+            return;
+        }
         const result = await booksModel.update(req.body,{
             where :{
                 bookID : id
             }
         });
-        if(result){
-           res.json("Updated succesfully"); 
-        }//return some response
+        console.log(result)
+        if(result[0] ==1){
+           res.json({message :"Updated succesfully"}); 
+        }else{
+            res.json({message :"Nothing has been updated"}); 
+        }
     }catch(error){
-        res.status(500).send("server error")
+        res.status(500).json({message : "server error"});
     }
     
 })
@@ -201,14 +207,14 @@ router.delete("/:id" , async(req , res) =>{
             include :[commentsModel]
         });
         if(!book){
-           res.status(404).json("No book has been found.");
+           res.status(404).json({message: "No book has been found."});
            return; 
         }
         await book.destroy();
-        res.json("deleted successfully");
+        res.json({message: "deleted successfully"});
 
     }catch(error){
-        res.status(500).send("server error")
+        res.status(500).json({message : "server error"});
     }
 })
 

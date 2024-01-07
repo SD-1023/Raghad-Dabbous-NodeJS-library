@@ -8,10 +8,6 @@ const router = express.Router();
 router.get('/' , async (req , res)=>{
     try{
         const result = await publisherModel.findAll();
-        if(result.length == 0){
-            res.json("No publisher has been found");
-            return;
-        }
         res.json(result);
     }catch(error){
         res.status(500).json("server error")
@@ -24,12 +20,12 @@ router.get('/:id' , async(req , res)=>{
         const id = parseInt(req.params.id)
         const result = await publisherModel.findByPk(id);
         if(!result){
-            res.json("No publisher has been found");
+            res.status(404).json("No publisher has been found");
             return;
         }
         res.json(result);
     }catch(error){
-        res.status(500).json("server error")
+        res.status(500).json({message : "server error"});
     }
     
 })

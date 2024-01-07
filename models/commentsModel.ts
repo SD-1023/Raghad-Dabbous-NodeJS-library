@@ -19,7 +19,8 @@ const commentsModel = sequelize.define("comments",{
         type : DataTypes.INTEGER,
         allowNull : true,
     },
-    book_id : DataTypes.INTEGER
+    book_id : DataTypes.INTEGER,
+    userID : DataTypes.INTEGER
 },{
     tableName: 'comments',
     timestamps: false

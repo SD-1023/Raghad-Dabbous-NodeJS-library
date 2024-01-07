@@ -1,6 +1,7 @@
 import expreess from "express"
 import commentsModel from "../models/commentsModel";
 import booksModel from "../models/booksModel";
+import sessionsModel from "../models/sessionsModel";
 
 
 const router =expreess();
@@ -44,7 +45,24 @@ router.post('/', async (req, res)=>{
             res.status(400).json("book id should an id of existing book");
             return;
         }
-        const result = await commentsModel.create(req.body);
+        //get user id from req
+        const session = req.headers.authorization;
+        const data = await sessionsModel.findOne({
+            where : {
+                session : session
+            }
+        })
+
+        const userID = data.dataValues.userID;
+
+        const newComment = {
+            name : req.body.name,
+            comment : req.body.comment,
+            stars : req.body.stars,
+            book_id : req.body.book_id,
+            userID : userID
+        }
+        const result = await commentsModel.create(newComment);
         res.status(201).json(result);
 
     }catch(error){
